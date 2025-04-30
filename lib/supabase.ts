@@ -47,14 +47,18 @@ function createSupabaseClient() {
 
     // Ensure URL is properly formatted
     let formattedUrl = supabaseUrl
-    if (!formattedUrl.startsWith("https://")) {
-      // If it doesn't have any protocol, add https://
-      if (!formattedUrl.startsWith("http://")) {
-        formattedUrl = `https://${formattedUrl}`
-      } else {
-        // If it has http://, replace with https://
-        formattedUrl = formattedUrl.replace("http://", "https://")
-      }
+    if (!formattedUrl.startsWith("https://") && !formattedUrl.startsWith("http://")) {
+      formattedUrl = `https://${formattedUrl}`
+    } else if (formattedUrl.startsWith("http://")) {
+      formattedUrl = formattedUrl.replace("http://", "https://")
+    }
+
+    // Validate URL before creating client
+    try {
+      new URL(formattedUrl)
+    } catch (error) {
+      console.error("Invalid Supabase URL:", error)
+      throw new Error("Invalid Supabase URL")
     }
 
     // Create client with proper configuration
@@ -66,7 +70,22 @@ function createSupabaseClient() {
     })
   } catch (error) {
     console.error("Error creating Supabase client:", error)
-    return null
+
+    // Return a fallback client that won't throw errors
+    return {
+      auth: {
+        getSession: () => Promise.resolve({ data: { session: null } }),
+        onAuthStateChange: () => ({ data: { subscription: { unsubscribe: () => {} } } }),
+        signOut: () => Promise.resolve({ error: null }),
+      },
+      from: () => ({
+        select: () => ({
+          eq: () => ({
+            single: () => Promise.resolve({ data: null, error: null }),
+          }),
+        }),
+      }),
+    }
   }
 }
 

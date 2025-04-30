@@ -11,12 +11,14 @@ import { ClientSideWrapper } from "@/components/client-side-wrapper"
 export default function Home() {
   return (
     <div className="min-h-screen bg-gradient">
-      <ClientSideWrapper>
-        <Navigation />
-      </ClientSideWrapper>
+      <Navigation />
       <main className="flex min-h-screen flex-col">
-        <Suspense fallback={<div className="pt-24">Loading...</div>}>
-          <ClientSideWrapper>
+        <Suspense
+          fallback={<div className="pt-24 h-[60vh] flex items-center justify-center">Loading hero section...</div>}
+        >
+          <ClientSideWrapper
+            fallback={<div className="pt-24 h-[60vh] flex items-center justify-center">Loading hero section...</div>}
+          >
             <Hero />
           </ClientSideWrapper>
         </Suspense>
