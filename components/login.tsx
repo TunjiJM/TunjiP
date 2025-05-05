@@ -3,7 +3,7 @@
 import type React from "react"
 
 import { useState, useEffect } from "react"
-import { useRouter, useSearchParams } from "next/navigation"
+import { useRouter } from "next/navigation"
 import Link from "next/link"
 import { Eye, EyeOff } from "lucide-react"
 import { Button } from "@/components/ui/button"
@@ -22,9 +22,7 @@ export function Login() {
   const [error, setError] = useState("")
   const [debugInfo, setDebugInfo] = useState<any>(null)
   const router = useRouter()
-  const searchParams = useSearchParams()
-  // Get the redirect path from URL or default to home
-  const redirectPath = searchParams?.get("redirect") || "/"
+  const [redirectPath, setRedirectPath] = useState("/")
   const [isMobile, setIsMobile] = useState(false)
   const [isMounted, setIsMounted] = useState(false)
   const [supabaseInstance, setSupabaseInstance] = useState<any>(null)
@@ -32,6 +30,23 @@ export function Login() {
   useEffect(() => {
     // Ensure component only runs on client-side
     setIsMounted(true)
+
+    // Get the redirect path from URL or default to home
+    const params = new URLSearchParams(window.location.search)
+    const redirect = params.get("redirect") || "/"
+    setRedirectPath(redirect)
+
+    // Check if we're on mobile
+    const checkMobile = () => {
+      setIsMobile(window.innerWidth < 768)
+    }
+
+    checkMobile()
+    window.addEventListener("resize", checkMobile)
+
+    return () => {
+      window.removeEventListener("resize", checkMobile)
+    }
   }, [])
 
   // Initialize Supabase client directly in the component
@@ -69,22 +84,6 @@ export function Login() {
     } catch (error: any) {
       console.error("Error initializing Supabase client:", error)
       setError(`Authentication initialization error: ${error.message}`)
-    }
-  }, [isMounted])
-
-  useEffect(() => {
-    if (!isMounted) return
-
-    // Check if we're on mobile
-    const checkMobile = () => {
-      setIsMobile(window.innerWidth < 768)
-    }
-
-    checkMobile()
-    window.addEventListener("resize", checkMobile)
-
-    return () => {
-      window.removeEventListener("resize", checkMobile)
     }
   }, [isMounted])
 

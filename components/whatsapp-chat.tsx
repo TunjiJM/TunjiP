@@ -71,7 +71,7 @@ const sampleMessages = [
 ]
 
 // Industry-specific sample messages
-const industrySamples = {
+const industrySamples: Record<string, Message[]> = {
   seafood: [
     {
       id: "seafood-1",
@@ -121,10 +121,16 @@ export function WhatsAppChat({ communityName, communityImage, roomId, industryId
   const messagesEndRef = useRef<HTMLDivElement>(null)
   const router = useRouter()
   const [isLoaded, setIsLoaded] = useState(false)
+  const [isMounted, setIsMounted] = useState(false)
+
+  // Set isMounted to true when component mounts
+  useEffect(() => {
+    setIsMounted(true)
+  }, [])
 
   // Initialize with welcome message and sample messages
   useEffect(() => {
-    if (!isLoaded) {
+    if (isMounted && !isLoaded) {
       // Create welcome message
       const welcomeMessage = {
         id: "welcome",
@@ -137,16 +143,18 @@ export function WhatsAppChat({ communityName, communityImage, roomId, industryId
       }
 
       // Get industry-specific messages if available, otherwise use generic samples
-      const industryMessages = industrySamples[industryId as keyof typeof industrySamples] || []
+      const industryMessages = industrySamples[industryId] || []
 
       // Combine welcome message with sample messages
       setMessages([welcomeMessage, ...sampleMessages, ...industryMessages])
       setIsLoaded(true)
     }
-  }, [communityName, communityImage, isLoaded, industryId])
+  }, [communityName, communityImage, isLoaded, industryId, isMounted])
 
   // Update local time
   useEffect(() => {
+    if (!isMounted) return
+
     const updateLocalTime = () => {
       const now = new Date()
       setLocalTime(now.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }))
@@ -156,12 +164,14 @@ export function WhatsAppChat({ communityName, communityImage, roomId, industryId
     const interval = setInterval(updateLocalTime, 60000) // Update every minute
 
     return () => clearInterval(interval)
-  }, [])
+  }, [isMounted])
 
   // Scroll to bottom when messages change
   useEffect(() => {
-    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" })
-  }, [messages])
+    if (isMounted) {
+      messagesEndRef.current?.scrollIntoView({ behavior: "smooth" })
+    }
+  }, [messages, isMounted])
 
   // Send a new message
   const handleSendMessage = () => {
@@ -242,6 +252,11 @@ export function WhatsAppChat({ communityName, communityImage, roomId, industryId
     } catch (error) {
       return "U" // Fallback initial if parsing fails
     }
+  }
+
+  // Don't render anything during SSR
+  if (!isMounted) {
+    return null
   }
 
   return (
