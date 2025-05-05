@@ -3,11 +3,11 @@
 import type React from "react"
 
 import { useState, useEffect } from "react"
+import { useRouter, useSearchParams } from "next/navigation"
 import Link from "next/link"
 import { Eye, EyeOff } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
-import { useRouter } from "next/navigation"
 import { Navigation } from "@/components/navigation"
 import { Footer } from "@/components/footer"
 
@@ -22,6 +22,9 @@ export function Login() {
   const [error, setError] = useState("")
   const [debugInfo, setDebugInfo] = useState<any>(null)
   const router = useRouter()
+  const searchParams = useSearchParams()
+  // Get the redirect path from URL or default to home
+  const redirectPath = searchParams?.get("redirect") || "/"
   const [isMobile, setIsMobile] = useState(false)
   const [isMounted, setIsMounted] = useState(false)
   const [supabaseInstance, setSupabaseInstance] = useState<any>(null)
@@ -124,7 +127,10 @@ export function Login() {
 
         // Successful login
         console.log("Logged in successfully", data)
-        router.push("/create-wallet") // Redirect to wallet dashboard instead of home page
+        console.log("Redirecting to:", redirectPath)
+
+        // Redirect to the specified path from the URL parameter
+        router.push(redirectPath)
       } catch (signInError: any) {
         console.error("Sign in with password error:", signInError)
 
@@ -169,7 +175,10 @@ export function Login() {
       const { error } = await supabaseInstance.auth.signInWithOtp({
         email,
         options: {
-          emailRedirectTo: typeof window !== "undefined" ? window.location.origin : undefined,
+          emailRedirectTo:
+            typeof window !== "undefined"
+              ? `${window.location.origin}/auth/callback?redirect=${encodeURIComponent(redirectPath)}`
+              : undefined,
         },
       })
 
@@ -304,7 +313,10 @@ export function Login() {
             <div className="text-center">
               <p className="text-base text-gray-900">
                 New to Moqify?{" "}
-                <Link href="/signup" className="font-medium text-blue-600 hover:text-blue-700">
+                <Link
+                  href={`/signup?redirect=${encodeURIComponent(redirectPath)}`}
+                  className="font-medium text-blue-600 hover:text-blue-700"
+                >
                   Sign Up for free
                 </Link>
               </p>
@@ -419,7 +431,10 @@ export function Login() {
             <div className="text-center mt-6">
               <p className="text-sm text-gray-600">
                 New to Moqify?{" "}
-                <Link href="/signup" className="font-medium text-blue-600 hover:text-blue-700">
+                <Link
+                  href={`/signup?redirect=${encodeURIComponent(redirectPath)}`}
+                  className="font-medium text-blue-600 hover:text-blue-700"
+                >
                   Sign Up for free
                 </Link>
               </p>

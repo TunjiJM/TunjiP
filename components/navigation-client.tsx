@@ -15,8 +15,8 @@ const navItems = [
   { name: "Wallet Dashboard", href: "/create-wallet", highlight: true },
   { name: "Track Your Order", href: "/track-order" },
   {
-    name: "Community Chat",
-    href: "/community-chat",
+    name: "Seafood Chat",
+    href: "/seafood-chat",
     icon: MessageSquare,
   },
 ]
@@ -232,11 +232,11 @@ export function NavigationClient() {
             <Button
               className="w-full mt-8"
               onClick={() => {
-                router.push(user ? "/profile" : "/signup")
+                router.push("/seafood-chat")
                 setIsOpen(false)
               }}
             >
-              {user ? "Go to Dashboard" : "Get Started"}
+              Join Seafood Community
             </Button>
           </div>
         </div>

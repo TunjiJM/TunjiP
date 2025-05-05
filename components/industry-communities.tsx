@@ -9,7 +9,6 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/u
 import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList } from "@/components/ui/command"
 import { useRouter } from "next/navigation"
 import { ReactCountryFlag } from "react-country-flag"
-import { supabase, isSupabaseConfigured } from "@/lib/supabase"
 import { Navigation } from "@/components/navigation"
 import { Footer } from "@/components/footer"
 
@@ -65,66 +64,79 @@ const countries = [
 const industries = [
   {
     name: "Seafood",
+    slug: "seafood",
     image: "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/images%20(46)-rJk7d33sfxF8ig7D89RwVK6pIYQHBv.jpeg",
     description: "Fresh seafood and marine products",
   },
   {
     name: "Fashion",
+    slug: "fashion",
     image: "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/images-18-RmxhWvjmSD8ya8pM1XVTRAsfW57c1e.jpeg",
     description: "Clothing, footwear, and accessories",
   },
   {
     name: "Cosmetics",
+    slug: "cosmetics",
     image: "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/images-10-pfLZ7a3AAzIauhtpEBUDchuAor4329.jpeg",
     description: "Makeup, skincare, and beauty products",
   },
   {
     name: "Vehicle Parts",
+    slug: "vehicle-parts",
     image: "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/images-23-giBjtHPMI1txLebLHdBHrQq1JoK1vH.jpeg",
     description: "Automotive parts and accessories",
   },
   {
     name: "Packaging Materials",
+    slug: "packaging-materials",
     image: "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/images-17-9XEOQ1BSYHPBJhJNpMIovK0FjTXRFz.jpeg",
     description: "Industrial and consumer packaging solutions",
   },
   {
     name: "Electronics",
+    slug: "electronics",
     image: "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/images-8-N1KpBmfqDgjaP7w90mXD8zaHwQTvpg.jpeg",
     description: "Mobile devices, computers, appliances, and more",
   },
   {
     name: "Kitchenware",
+    slug: "kitchenware",
     image: "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/images-11-Wh02EawIYSbVk59dk0t8Nz079m7tj8.jpeg",
     description: "Cookware, tableware, appliances, and kitchen accessories",
   },
   {
     name: "Chemical",
+    slug: "chemical",
     image: "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/images-13-RmdzM8q4JjOm8NLtrjlm0HVQxJMSld.jpeg",
     description: "Industrial, laboratory, and specialty chemicals",
   },
   {
     name: "Personal Care",
+    slug: "personal-care",
     image: "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/images-19-74lMtsfG1R1sqHGIz9EfmFtLLMBuhb.jpeg",
     description: "Beauty, skincare, and personal hygiene products",
   },
   {
     name: "Farm Input",
+    slug: "farm-input",
     image: "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/images%20(49)-G0Lp41Xhnj94pKG2btwShMwU1Z3Hac.jpeg",
     description: "Agricultural supplies, equipment, and farming materials",
   },
   {
     name: "Hair",
+    slug: "hair",
     image: "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/images%20(47)-9ztszyyxKhtlyQBdHWwRmtfn28Mupr.jpeg",
     description: "Hair extensions, wigs, care products, and accessories",
   },
   {
     name: "Baby Products",
+    slug: "baby-products",
     image: "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/images-16-zCHWKhFH6vzh6aEBD5rSKDijLbQV8L.jpeg",
     description: "Essential products and gear for infants and toddlers",
   },
   {
     name: "Pharmaceutical",
+    slug: "pharmaceutical",
     image: "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/images-4-1o8xRmAZJZGdiePTpY8pj6jhmYejNo.jpeg",
     description: "Medicines, medical supplies, and healthcare products",
   },
@@ -134,83 +146,21 @@ export function IndustryCommunities() {
   const router = useRouter()
   const [selectedIndustry, setSelectedIndustry] = useState<string | null>(null)
   const [isDialogOpen, setIsDialogOpen] = useState(false)
-  const [user, setUser] = useState<any>(null)
-  const [userCountry, setUserCountry] = useState<string | null>(null)
-  const [loading, setLoading] = useState(true)
   const [isMounted, setIsMounted] = useState(false)
-  const [isSupabaseAvailable, setIsSupabaseAvailable] = useState(false)
 
   // Ensure component only runs on client-side
   useEffect(() => {
     setIsMounted(true)
   }, [])
 
-  useEffect(() => {
-    if (!isMounted) return
-
-    // Check if Supabase is available
-    setIsSupabaseAvailable(isSupabaseConfigured())
-
-    const checkUser = async () => {
-      // Skip if Supabase is not available
-      if (!isSupabaseConfigured()) {
-        setLoading(false)
-        return
-      }
-
-      try {
-        const {
-          data: { session },
-        } = await supabase.auth.getSession()
-
-        if (!session) {
-          // Don't redirect immediately, just set loading to false
-          setLoading(false)
-          return
-        }
-
-        setUser(session.user)
-
-        // Get user's country from their profile
-        if (supabase) {
-          const { data: profile } = await supabase.from("profiles").select("country").eq("id", session.user.id).single()
-
-          if (profile && profile.country) {
-            setUserCountry(profile.country)
-          }
-        }
-      } catch (error) {
-        console.error("Error checking user:", error)
-      } finally {
-        setLoading(false)
-      }
-    }
-
-    checkUser()
-  }, [isMounted, router])
-
-  const handleJoinCommunity = (industryName: string) => {
-    // Check if user is logged in
-    if (!user && isSupabaseAvailable) {
-      router.push("/login")
-      return
-    }
-
-    if (userCountry) {
-      // If user has a country set, redirect directly to that country's community
-      const industrySlug = industryName.toLowerCase().replace(/\s+/g, "-")
-      router.push(`/communities/${userCountry}/${industrySlug}`)
-    } else {
-      // If user doesn't have a country set, open dialog to select
-      setSelectedIndustry(industryName)
-      setIsDialogOpen(true)
-    }
+  const handleJoinCommunity = (industrySlug: string) => {
+    // Direct to the industry-specific chat page
+    router.push(`/${industrySlug}-chat`)
   }
 
   const handleCountrySelect = (country: string) => {
     if (selectedIndustry) {
-      const industrySlug = selectedIndustry.toLowerCase().replace(/\s+/g, "-")
-      router.push(`/communities/${country}/${industrySlug}`)
+      router.push(`/${selectedIndustry}-chat`)
     }
     setIsDialogOpen(false)
     setSelectedIndustry(null)
@@ -225,18 +175,6 @@ export function IndustryCommunities() {
             <div className="h-40"></div>
           </div>
         </div>
-      </div>
-    )
-  }
-
-  if (loading) {
-    return (
-      <div className="min-h-screen bg-white">
-        <Navigation />
-        <div className="flex justify-center items-center h-screen bg-gray-100">
-          <div className="w-8 h-8 border-4 border-blue-600 border-t-transparent rounded-full animate-spin"></div>
-        </div>
-        <Footer />
       </div>
     )
   }
@@ -264,71 +202,22 @@ export function IndustryCommunities() {
               Start collaborating today!
             </p>
 
-            {!isSupabaseAvailable && (
-              <div className="p-4 bg-yellow-100 text-yellow-800 rounded-lg mb-6">
-                <p className="font-medium mb-2">Supabase connection is not available. Some features may be limited.</p>
-                <Button
-                  onClick={() => router.push("/supabase-config")}
-                  className="bg-yellow-200 text-yellow-800 hover:bg-yellow-300"
-                >
-                  Configure Supabase
-                </Button>
-              </div>
-            )}
-
-            {isSupabaseAvailable && !user && (
-              <div className="p-4 bg-yellow-100 text-yellow-800 rounded-lg mb-6">
-                <p className="font-medium mb-2">Please log in or sign up to join country-specific communities.</p>
-                <div className="flex flex-col sm:flex-row gap-2 justify-center mt-2">
-                  <Button
-                    onClick={() => router.push("/login")}
-                    className="bg-yellow-200 text-yellow-800 hover:bg-yellow-300"
-                  >
-                    Log In
-                  </Button>
-                  <Button onClick={() => router.push("/signup")} className="bg-blue-500 text-white hover:bg-blue-600">
-                    Sign Up
-                  </Button>
-                </div>
-              </div>
-            )}
-
-            {isSupabaseAvailable && user && !userCountry && (
-              <div className="p-4 bg-yellow-100 text-yellow-800 rounded-lg mb-6">
-                <p className="font-medium mb-2">
-                  Please set your country in your profile to join country-specific communities.
-                </p>
-                <Button
-                  onClick={() => router.push("/profile")}
-                  className="bg-yellow-200 text-yellow-800 hover:bg-yellow-300"
-                >
-                  Update Profile
-                </Button>
-              </div>
-            )}
-
-            {isSupabaseAvailable && user && userCountry && (
-              <div className="flex items-center justify-center gap-2 mb-6">
-                <p className="text-white">Your country: </p>
-                <div className="flex items-center gap-2 bg-white/20 px-3 py-2 rounded-lg">
-                  <ReactCountryFlag
-                    countryCode={userCountry}
-                    svg
-                    style={{
-                      width: "1.5em",
-                      height: "1.5em",
-                    }}
-                  />
-                  <span className="font-medium">
-                    {countries.find((c) => c.code === userCountry)?.name || userCountry}
-                  </span>
-                </div>
-              </div>
-            )}
-
-            <Button size="lg" className="bg-white text-blue-600 hover:bg-blue-50">
-              Explore Communities
-            </Button>
+            <div className="flex flex-wrap gap-4 justify-center">
+              <Button
+                size="lg"
+                className="bg-white text-blue-600 hover:bg-blue-50"
+                onClick={() => router.push("/seafood-chat")}
+              >
+                Join Seafood Community
+              </Button>
+              <Button
+                size="lg"
+                className="bg-blue-800 text-white hover:bg-blue-900"
+                onClick={() => router.push("/fashion-chat")}
+              >
+                Join Fashion Community
+              </Button>
+            </div>
           </div>
         </div>
       </section>
@@ -358,7 +247,7 @@ export function IndustryCommunities() {
                   <p className="text-gray-600 mb-4 font-inter">{industry.description}</p>
                   <Button
                     className="w-full bg-blue-500 hover:bg-blue-600 text-white font-semibold py-3 px-4 rounded-full shadow transition-all duration-300"
-                    onClick={() => handleJoinCommunity(industry.name)}
+                    onClick={() => handleJoinCommunity(industry.slug)}
                   >
                     Join Community
                   </Button>
