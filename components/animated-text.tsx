@@ -1,9 +1,9 @@
-"use client"
+'use client'
 
-import { useState, useEffect } from "react"
+import React, { useState, useEffect } from 'react'
 
 export function AnimatedText() {
-  const [text, setText] = useState("")
+  const [text, setText] = useState('')
   const fullText = "At the heart of Moqify is MOQ"
 
   useEffect(() => {

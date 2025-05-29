@@ -48,11 +48,11 @@ export function Features() {
           <h2 className="text-3xl font-bold tracking-tight sm:text-4xl md:text-5xl text-white drop-shadow-lg">
             Everything you need to{" "}
             <span className="bg-gradient-to-r from-blue-400 to-purple-400 bg-clip-text text-transparent">
-              import smarter
+              Trade Smarter
             </span>
           </h2>
           <p className="mt-4 text-lg text-blue-100 font-medium">
-            Streamline your importing process with our comprehensive platform
+            Streamline your local and international sourcing with Moqify's all-in-one MOQ-sharing platform
           </p>
         </div>
         <div className="grid gap-6 md:gap-8 sm:grid-cols-2 lg:grid-cols-4">

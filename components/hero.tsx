@@ -21,7 +21,7 @@ const features = [
   },
   {
     icon: Factory,
-    title: "Verified Global Manufacturers and Suppliers",
+    title: "Verified Local and Global Manufacturers",
     description: "Trusted partners worldwide.",
     id: "global-manufacturers",
   },
@@ -40,15 +40,19 @@ export function Hero() {
         <div className="space-y-4 max-w-4xl mx-auto">
           <h1 className="text-responsive-3xl font-bold tracking-tight">
             <span className="bg-gradient-to-r from-blue-600 via-purple-500 to-pink-500 bg-clip-text text-transparent animate-gradient-x">
-              Redefining Global Trade:
+              Redefining Trade,
             </span>
             <br />
             <span className="bg-gradient-to-r from-indigo-600 via-violet-500 to-fuchsia-500 bg-clip-text text-transparent animate-gradient-x">
-              A Community-Driven MOQ-Sharing Platform
+              Locally and Globally
             </span>
           </h1>
+          <h2 className="text-responsive-xl font-semibold text-gray-800 mb-4">
+            A Community-Driven MOQ-Sharing Platform
+          </h2>
           <p className="text-responsive-lg max-w-3xl mx-auto leading-relaxed text-gray-700 font-medium">
-            Save Big with Moqify! Share Minimum Order Quantities, Cut Costs, and Access Global Manufacturers with Ease.
+            Save Big with Moqify! Share Minimum Order Quantities, Cut Costs, and Access Local and Global Manufacturers
+            with Ease.
           </p>
         </div>
 

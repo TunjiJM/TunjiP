@@ -5,7 +5,9 @@ export function Partners() {
     <section id="partners" className="py-16 md:py-24">
       <div className="container">
         <div className="text-center mb-16">
-          <h2 className="text-3xl font-bold tracking-tight sm:text-4xl md:text-5xl">Trusted by Industry Leaders</h2>
+          <h2 className="text-3xl font-bold tracking-tight sm:text-4xl md:text-5xl">
+            Trusted by Industry Leaders
+          </h2>
           <p className="mt-4 text-lg text-muted-foreground">
             We partner with leading manufacturers and logistics providers
           </p>

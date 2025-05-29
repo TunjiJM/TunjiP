@@ -1,6 +1,6 @@
-"use client"
+'use client'
 
-import { Bell, Signal, Wifi, Battery } from "lucide-react"
+import { Bell, Signal, Wifi, Battery } from 'lucide-react'
 
 export function PhoneMockup() {
   return (
@@ -11,6 +11,7 @@ export function PhoneMockup() {
         <div className="absolute -left-[1px] top-[100px] w-[1px] h-12 bg-gray-800 rounded-l" /> {/* Volume Up */}
         <div className="absolute -left-[1px] top-[150px] w-[1px] h-12 bg-gray-800 rounded-l" /> {/* Volume Down */}
         <div className="absolute -right-[1px] top-[120px] w-[1px] h-14 bg-gray-800 rounded-r" /> {/* Power */}
+        
         {/* Screen Container */}
         <div className="absolute inset-[3px] bg-white overflow-hidden rounded-[42px]">
           {/* Status Bar Background */}
